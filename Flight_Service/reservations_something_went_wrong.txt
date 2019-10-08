@@ -1,0 +1,52 @@
+create user1 user1 1000000
+login user1 user1
+search "Seattle WA" "Chicago IL" 1 5 10
+book 5
+pay 1
+search "Chicago IL" "Norfolk VA" 1 6 10
+book 3 # something went wrong
+reservations
+*
+Created user user1
+Logged in as user1
+Itinerary 0: 1 flight(s), 214 minutes
+ID: 1019721 Day: 5 Carrier: UA Number: 1282 Origin: Seattle WA Dest: Chicago IL Duration: 214 Capacity: 14 Price: 141
+Itinerary 1: 1 flight(s), 216 minutes
+ID: 482522 Day: 5 Carrier: UA Number: 646 Origin: Seattle WA Dest: Chicago IL Duration: 216 Capacity: 18 Price: 792
+Itinerary 2: 1 flight(s), 216 minutes
+ID: 495906 Day: 5 Carrier: UA Number: 1236 Origin: Seattle WA Dest: Chicago IL Duration: 216 Capacity: 2 Price: 453
+Itinerary 3: 1 flight(s), 219 minutes
+ID: 705736 Day: 5 Carrier: AS Number: 20 Origin: Seattle WA Dest: Chicago IL Duration: 219 Capacity: 0 Price: 516
+Itinerary 4: 1 flight(s), 220 minutes
+ID: 552197 Day: 5 Carrier: WN Number: 2220 Origin: Seattle WA Dest: Chicago IL Duration: 220 Capacity: 13 Price: 817
+Itinerary 5: 1 flight(s), 220 minutes
+ID: 649290 Day: 5 Carrier: AA Number: 1239 Origin: Seattle WA Dest: Chicago IL Duration: 220 Capacity: 15 Price: 428
+Itinerary 6: 1 flight(s), 221 minutes
+ID: 490630 Day: 5 Carrier: UA Number: 942 Origin: Seattle WA Dest: Chicago IL Duration: 221 Capacity: 6 Price: 508
+Itinerary 7: 1 flight(s), 221 minutes
+ID: 552195 Day: 5 Carrier: WN Number: 202 Origin: Seattle WA Dest: Chicago IL Duration: 221 Capacity: 19 Price: 387
+Itinerary 8: 1 flight(s), 222 minutes
+ID: 43976 Day: 5 Carrier: AA Number: 1734 Origin: Seattle WA Dest: Chicago IL Duration: 222 Capacity: 9 Price: 944
+Itinerary 9: 1 flight(s), 222 minutes
+ID: 1019698 Day: 5 Carrier: UA Number: 1262 Origin: Seattle WA Dest: Chicago IL Duration: 222 Capacity: 10 Price: 799
+Booked flight(s), reservation ID: 1
+Paid reservation: 1 remaining balance: 999572
+Itinerary 0: 1 flight(s), 105 minutes
+ID: 554252 Day: 6 Carrier: WN Number: 1573 Origin: Chicago IL Dest: Norfolk VA Duration: 105 Capacity: 1 Price: 386
+Itinerary 1: 1 flight(s), 109 minutes
+ID: 1052621 Day: 6 Carrier: WN Number: 2436 Origin: Chicago IL Dest: Norfolk VA Duration: 109 Capacity: 1 Price: 884
+Itinerary 2: 1 flight(s), 110 minutes
+ID: 1052620 Day: 6 Carrier: WN Number: 796 Origin: Chicago IL Dest: Norfolk VA Duration: 110 Capacity: 6 Price: 684
+Itinerary 3: 1 flight(s), 112 minutes
+ID: 285567 Day: 6 Carrier: MQ Number: 4269 Origin: Chicago IL Dest: Norfolk VA Duration: 112 Capacity: 12 Price: 765
+Itinerary 4: 1 flight(s), 124 minutes
+ID: 278680 Day: 6 Carrier: MQ Number: 4025 Origin: Chicago IL Dest: Norfolk VA Duration: 124 Capacity: 13 Price: 614
+Itinerary 5: 1 flight(s), 125 minutes
+ID: 282582 Day: 6 Carrier: MQ Number: 4161 Origin: Chicago IL Dest: Norfolk VA Duration: 125 Capacity: 19 Price: 391
+Itinerary 6: 1 flight(s), 129 minutes
+ID: 849105 Day: 6 Carrier: EV Number: 4420 Origin: Chicago IL Dest: Norfolk VA Duration: 129 Capacity: 8 Price: 803
+Itinerary 7: 1 flight(s), 200 minutes
+ID: 926291 Day: 6 Carrier: EV Number: 4642 Origin: Chicago IL Dest: Norfolk VA Duration: 200 Capacity: 18 Price: 280
+Booking failed
+Reservation 1 paid: true:
+ID: 649290 Day: 5 Carrier: AA Number: 1239 Origin: Seattle WA Dest: Chicago IL Duration: 220 Capacity: 15 Price: 428

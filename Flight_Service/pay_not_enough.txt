@@ -1,0 +1,30 @@
+create user1 user1 10
+login user1 user1
+search "Seattle WA" "Chicago IL" 1 4 10
+book 5
+pay 1
+*
+Created user user1
+Logged in as user1
+Itinerary 0: 1 flight(s), 208 minutes
+ID: 490505 Day: 4 Carrier: UA Number: 938 Origin: Seattle WA Dest: Chicago IL Duration: 208 Capacity: 3 Price: 221
+Itinerary 1: 1 flight(s), 215 minutes
+ID: 1044401 Day: 4 Carrier: WN Number: 1582 Origin: Seattle WA Dest: Chicago IL Duration: 215 Capacity: 2 Price: 376
+Itinerary 2: 1 flight(s), 217 minutes
+ID: 495905 Day: 4 Carrier: UA Number: 1236 Origin: Seattle WA Dest: Chicago IL Duration: 217 Capacity: 12 Price: 525
+Itinerary 3: 1 flight(s), 218 minutes
+ID: 549231 Day: 4 Carrier: WN Number: 202 Origin: Seattle WA Dest: Chicago IL Duration: 218 Capacity: 1 Price: 452
+Itinerary 4: 1 flight(s), 220 minutes
+ID: 704701 Day: 4 Carrier: AS Number: 20 Origin: Seattle WA Dest: Chicago IL Duration: 220 Capacity: 15 Price: 165
+Itinerary 5: 1 flight(s), 221 minutes
+ID: 35328 Day: 4 Carrier: AA Number: 1460 Origin: Seattle WA Dest: Chicago IL Duration: 221 Capacity: 13 Price: 879
+Itinerary 6: 1 flight(s), 221 minutes
+ID: 485962 Day: 4 Carrier: UA Number: 754 Origin: Seattle WA Dest: Chicago IL Duration: 221 Capacity: 11 Price: 567
+Itinerary 7: 1 flight(s), 221 minutes
+ID: 1021055 Day: 4 Carrier: UA Number: 212 Origin: Seattle WA Dest: Chicago IL Duration: 221 Capacity: 15 Price: 616
+Itinerary 8: 1 flight(s), 221 minutes
+ID: 1044400 Day: 4 Carrier: WN Number: 772 Origin: Seattle WA Dest: Chicago IL Duration: 221 Capacity: 17 Price: 317
+Itinerary 9: 1 flight(s), 222 minutes
+ID: 549233 Day: 4 Carrier: WN Number: 2220 Origin: Seattle WA Dest: Chicago IL Duration: 222 Capacity: 11 Price: 662
+Booked flight(s), reservation ID: 1
+User has only 10 in account but itinerary costs 879
