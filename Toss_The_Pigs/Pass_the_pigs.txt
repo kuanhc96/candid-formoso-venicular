@@ -1,0 +1,6 @@
+pink 0.335 0
+dot 0.67 0
+razorback 0.865 5
+trotter 0.957 5
+snouter 0.992 10
+leaning_jowler 1 15
