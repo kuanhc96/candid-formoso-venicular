@@ -1,2 +1,2 @@
-# AMATH383-project
+# Circle_Of_Life-project
 
