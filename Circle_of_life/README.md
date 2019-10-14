@@ -1,2 +1,4 @@
-# Circle_Of_Life-project
+# Circle_Of_Life-project (See Circle_of_Life.pdf for more details)
 
+This report explores an alternative to the traditional deterministic-based method for modeling population growth. While deterministic population growth models focus on the macroscopic behavior traits of a population and integrate them into dynamical systems in the form of various parameters, the stochastic population growth model focuses on local interactions between entities in it that are used to make broader speculations of how a population will evolve. Two stochastic models were built for different types of modeling problems, each used to answer different questions about a population.
+The implementation of the stochastic model is done by creating a Cellular Automaton (CA) using Object-Oriented Programing with Java, where each entity in the population is represented by the box on an N by N grid. Animations are created with the DrawingPanel utility, which comes courtesy of Professor Stuart Reges and Marty Stepp at the University of Washington and Stanford University, respectively. This tool is used in conjunction with the Java.awt package by Oracle.
