@@ -3,40 +3,44 @@ import socket
 import time
 import math
 
-class myThread(threading.Thread):
+class UDPThread(threading.Thread):
     
-    HOST = socket.gethostname()
-    
-    def __init__(self, clientData, clientAddr): # Client data is a byte array and is only first transmission
+    def __init__(self, clientData, timeout, clientAddr): # Client data is a byte array and is only first transmission
+############################### class constant ############################################        
+        HOST = socket.gethostname()
+############################### class variables ###########################################        
         self.clientData = clientData
+        self.timeout = timeout
         self.clientAddr = clientAddr
         self.byteFile = bytearray()
+        self.file = None
+############################### Socket setup ##############################################        
         self.sockThread = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sockThread.bind((HOST, 0))
+        self.sockThread.settimeout(self.timeout / 1000) # timeouts for recv not for handling data
         
     def run(self): # need to implement the recv for subsequent transmissions
-        self.sockThread.settimeout(self.timeout / 1000) # timeouts for recv not for handling data
         while True:
         
             opcode = self.clientData[1]
             if (opcode == 1):
                 # RRQ
-                sendData(self.clientData, self.clinetAddr)
+                self.sendData(self.clientData, self.clientAddr)
             elif (opcode == 2):
                 # WRQ
-                sendAck(self.clientData, self.clientAddr)
+                self.sendAck(self.clientData, self.clientAddr)
             elif (opcode == 3):
                 # DATA
-                sendAck(self.clientData, self.clientAddr)
+                self.sendAck(self.clientData, self.clientAddr)
             elif (opcode == 4):
                 # ACK
-                sendData(self.clientData, self.clientAddr)
+                self.sendData(self.clientData, self.clientAddr)
             elif (opcode == 5):
                 # ERR -- end transfer? -- TODO
-                printError(self.clientData)
+                self.printError(self.clientData)
                 break
             else:
-                sockThread.sendto('Error: Invalid Opcode'.encode(), addr)
+                self.sockThread.sendto('Error: Invalid Opcode'.encode(), addr)
             
             timeoutCounter = 0
             try:
@@ -44,8 +48,8 @@ class myThread(threading.Thread):
                 # If client did not receive ACK, DATA will be transmitted again and the loop will restart.
                 # In case the client did not receive final DATA from thread, continue to listen for ACK.
                 # If the client did not receive DATA, ACK will be retransmitted again and the loop will restart.
-                self.clientData, self.clientAddr = sockThread.recvfrom(516)
-            except sockThread.timeout:
+                self.clientData, self.clientAddr = self.sockThread.recvfrom(516)
+            except self.sockThread.timeout as e:
                 timeoutCounter = timeoutCounter + 1
                 if (timeoutCounter > 100):
                     # Client closed connection
@@ -64,28 +68,27 @@ class myThread(threading.Thread):
         ack = bytearray()
         ack.append(0)
         ack.append(4)
-        fileName = getFileName(data)
-        file = open(fileName, 'w+')
+        
         if (opcode == 2):
             # WRQ -- respond to WRITER. Block # starts at 0
             ack.append(0)
             ack.append(0)
+            fileName = self.getFileName(data)
+            self.file = open(fileName, 'w+')
+            print("opening: " + fileName)
         else:
             # ACK -- respond to WRITER. Block # continues
             ack.append(data[2])
             ack.append(data[3])
+            # Decode bytes into string and write to file
+            for i in data[4:]:
+                self.file.write(self.int2bytes(i).decode())
+            
+            if (len(data[4:]) < 512):
+                self.file.close()
         
         self.sockThread.sendto(ack, addr)
-        
-        # Decode bytes into string and write to file
-        for i in data[4:]:
-            file.write(i.decode())
-        
-        # if (len(data[4:]) < 512):
-            # last message -- TODO
-        
-        file.close()
-    
+
     # sendData handles the RRQ's and the ACK's from the client
     # void return type. sends data requested or next packet of data expected to the socket.
     # data is in bytes and represents the data packet received from the client
@@ -95,18 +98,21 @@ class myThread(threading.Thread):
         toSend = bytearray()
         toSend.append(0)
         toSend.append(3) # Header -- DATA
-        fileName = getFileName(data) # Converts filename field in packet from bytes to string
-        file = open(fileName, 'rb') # open the file so that it can be read as bytes
-        
-        # converts file into a bytearray. 
-        # Class field self.byteFile is now a filled bytearray representing the file.
-        # Section of file to be sent can now be specified.
-        generateByteFile(file) 
+        if (self.file == None):
+            fileName = self.getFileName(data) # Converts filename field in packet from bytes to string
+            print('opening' + fileName)
+            self.file = open(fileName, 'rb') # open the file so that it can be read as bytes
+            
+            # converts file into a bytearray. 
+            # Class field self.byteFile is now a filled bytearray representing the file.
+            # Section of file to be sent can now be specified.
+            self.generateByteFile(self.file)
+            self.file.close()
 
         if (opcode == 1): # RRQ
             toSend.append(0)
             toSend.append(1) # sequence number starts at 1
-            getFileSection(toSend, 0) # access first 512 bytes of the file, from 0 to 511
+            self.getFileSection(toSend, 0) # access first 512 bytes of the file, from 0 to 511
             
         else: # opcode == 4 -- client acknowledges receiving the DATA
             
@@ -114,18 +120,20 @@ class myThread(threading.Thread):
             bytesSeq.append(data[2]) # append sequence numbers from client to bytesSeq
             bytesSeq.append(data[3])
             intSeq = int.from_bytes(bytesSeq, "big") # convert sequence number in bytes to int
+            print("ack #: " + str(intSeq))
             intSeq = intSeq + 1 # increment sequence, indicating that data sent is the next segment of the file
-            newBytesSeq = int2bytes(intSeq) #convert the sequence number in int back to bytes to append to the packet
+            print("seq #: " + str(intSeq))
+            newBytesSeq = self.int2bytesSeq(intSeq) #convert the sequence number in int back to bytes to append to the packet
             
             toSend.append(newBytesSeq[0]) # append sequence number in bytes to the packet to be sent
             toSend.append(newBytesSeq[1])
             
             # append file in bytes to packet. access the file starting at intSeq - 1
             # -1 because sequence starts at one, while the array starts at index 0
-            getFileSection(toSend, intSeq - 1) 
+            self.getFileSection(toSend, 512 * (intSeq - 1)) 
             
         self.sockThread.sendto(toSend, addr) # send packet to the client's address
-        file.close()
+        
     
 ################################################################### HELPER METHODS ############################################################
         
@@ -133,18 +141,27 @@ class myThread(threading.Thread):
     # takes filename in bytes in RRQ and returns filename as a string 
     def getFileName(self, data):
         i = 2
-        fileName = ''
+        fileName = bytearray()
         while (data[i] != 0): # loop through filename field in RRQ
-            fileName = filenName + data[i]
+            fileName.append(data[i])
             i = i + 1
         
         return fileName.decode() #convert byte filename into string
     
-    # Returns bytearray that represents the sequence number in bytes
+    # Returns byte that represents an integer. This integer may represent a string
     def int2bytes(self, integer):
+        numBytes = 1
+        temp = integer
+        while (temp / 256 > 1):
+            numBytes = numBytes + 1
+            temp = temp / 256
+        
+        return (integer).to_bytes(numBytes, 'big')
+    
+    def int2bytesSeq(self, integer):
         x = bytearray()
-        x.append(math.floor(integer/256)) # First byte
-        x.append(integer%256) # second byte
+        x.append(math.floor(integer / 256))
+        x.append(integer % 256)
         return x
     
     # void return type. Edits the byteFile array if no file has been read yet.
@@ -154,9 +171,12 @@ class myThread(threading.Thread):
         if (len(self.byteFile) == 0):
             # generate bytearray that represents file
             byte = file.read(1)# read first byte
-            while (byte != ""):
-                self.byteFile.append(byte) # append bytes in file to bytearray
-                byte = file.read() # read next byte
+            intByte = int.from_bytes(byte, "big")
+            self.byteFile.append(intByte)
+            while (byte != b''):
+                byte = file.read(1) # read next byte
+                intByte = int.from_bytes(byte, "big")
+                self.byteFile.append(intByte) # append bytes in file to bytearray
     
     # void return type. appends elements to the toSend array
     def getFileSection(self, toSend, startSeq):
