@@ -14,12 +14,14 @@ class UDPThread(threading.Thread):
         self.clientAddr = clientAddr
         self.byteFile = bytearray()
         self.file = None
+        self.timeoutCounter = 0
 ############################### Socket setup ##############################################        
         self.sockThread = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sockThread.bind((HOST, 0))
         self.sockThread.settimeout(self.timeout / 1000) # timeouts for recv not for handling data
         
     def run(self): # need to implement the recv for subsequent transmissions
+        print("Thread created. Connection established.")
         while True:
         
             opcode = self.clientData[1]
@@ -42,19 +44,23 @@ class UDPThread(threading.Thread):
             else:
                 self.sockThread.sendto('Error: Invalid Opcode'.encode(), addr)
             
-            timeoutCounter = 0
+            if (self.file == None):
+                print('Transfer completed. Terminating connection')
+                break
+            
             try:
                 # In case client did not receive final ACK from thread, continue to listen for DATA.
                 # If client did not receive ACK, DATA will be transmitted again and the loop will restart.
                 # In case the client did not receive final DATA from thread, continue to listen for ACK.
                 # If the client did not receive DATA, ACK will be retransmitted again and the loop will restart.
                 self.clientData, self.clientAddr = self.sockThread.recvfrom(516)
-            except self.sockThread.timeout as e:
-                timeoutCounter = timeoutCounter + 1
-                if (timeoutCounter > 100):
+            except socket.timeout as e:
+                self.timeoutCounter = self.timeoutCounter + 1
+                if (self.timeoutCounter > 10):
                     # Client closed connection
                     # -- client may have received data and closed, but final ACK from client was lost
                     # -- or client received final ACK from thread and closed without retransmitting data
+                    print("Transfer completed. Terminating connection.")
                     break 
                 else:
                     continue
@@ -81,11 +87,16 @@ class UDPThread(threading.Thread):
             ack.append(data[2])
             ack.append(data[3])
             # Decode bytes into string and write to file
+            
             for i in data[4:]:
-                self.file.write(self.int2bytes(i).decode())
+                self.file.write(self.int2bytes(i).hex())
+                
             
             if (len(data[4:]) < 512):
+                print('closing file')
+                print(data)
                 self.file.close()
+                self.file = None
         
         self.sockThread.sendto(ack, addr)
 
@@ -100,7 +111,7 @@ class UDPThread(threading.Thread):
         toSend.append(3) # Header -- DATA
         if (self.file == None):
             fileName = self.getFileName(data) # Converts filename field in packet from bytes to string
-            print('opening' + fileName)
+            print('opening ' + fileName)
             self.file = open(fileName, 'rb') # open the file so that it can be read as bytes
             
             # converts file into a bytearray. 
@@ -120,9 +131,9 @@ class UDPThread(threading.Thread):
             bytesSeq.append(data[2]) # append sequence numbers from client to bytesSeq
             bytesSeq.append(data[3])
             intSeq = int.from_bytes(bytesSeq, "big") # convert sequence number in bytes to int
-            print("ack #: " + str(intSeq))
+            #print("ack #: " + str(intSeq))
             intSeq = intSeq + 1 # increment sequence, indicating that data sent is the next segment of the file
-            print("seq #: " + str(intSeq))
+            #print("seq #: " + str(intSeq))
             newBytesSeq = self.int2bytesSeq(intSeq) #convert the sequence number in int back to bytes to append to the packet
             
             toSend.append(newBytesSeq[0]) # append sequence number in bytes to the packet to be sent
@@ -187,7 +198,7 @@ class UDPThread(threading.Thread):
         else:
             # read data till end
             i = startSeq
-            while (i < len(self.byteFile)):
+            while (i < len(self.byteFile) - 1):
                 toSend.append(self.byteFile[i])
                 i = i + 1
                 
