@@ -15,6 +15,8 @@ class UDPThread(threading.Thread):
         self.byteFile = bytearray()
         self.file = None
         self.timeoutCounter = 0
+        self.previousSeq1 = -1
+        self.previousSeq2 = -1
 ############################### Socket setup ##############################################        
         self.sockThread = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sockThread.bind((HOST, 0))
@@ -86,10 +88,13 @@ class UDPThread(threading.Thread):
             # ACK -- respond to WRITER. Block # continues
             ack.append(data[2])
             ack.append(data[3])
+
             # Decode bytes into string and write to file
-            
-            for i in data[4:]:
-                self.file.write(self.int2bytes(i).hex())
+            if self.previousSeq1 != ack[2] or self.previousSeq2 != ack[3]:
+                self.previousSeq1 = ack[2]
+                self.previousSeq2 = ack[3]
+                for i in data[4:]:
+                    self.file.write(self.int2bytes(i).hex())
                 
             
             if (len(data[4:]) < 512):
