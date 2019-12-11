@@ -7,7 +7,7 @@ class UDPThread(threading.Thread):
     
     def __init__(self, clientData, timeout, clientAddr): # Client data is a byte array and is only first transmission
 ############################### class constant ############################################        
-        HOST = socket.gethostname()
+        HOST = ''
 ############################### class variables ###########################################        
         self.clientData = clientData
         self.timeout = timeout
@@ -18,7 +18,7 @@ class UDPThread(threading.Thread):
         self.previousSeq1 = -1
         self.previousSeq2 = -1
 ############################### Socket setup ##############################################        
-        self.sockThread = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.sockThread = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
         self.sockThread.bind((HOST, 0))
         self.sockThread.settimeout(self.timeout / 1000) # timeouts for recv not for handling data
         
@@ -40,7 +40,7 @@ class UDPThread(threading.Thread):
                 # ACK
                 self.sendData(self.clientData, self.clientAddr)
             elif (opcode == 5):
-                # ERR -- end transfer? -- TODO
+                
                 self.printError(self.clientData)
                 break
             else:
@@ -136,9 +136,9 @@ class UDPThread(threading.Thread):
             bytesSeq.append(data[2]) # append sequence numbers from client to bytesSeq
             bytesSeq.append(data[3])
             intSeq = int.from_bytes(bytesSeq, "big") # convert sequence number in bytes to int
-            #print("ack #: " + str(intSeq))
+            
             intSeq = intSeq + 1 # increment sequence, indicating that data sent is the next segment of the file
-            #print("seq #: " + str(intSeq))
+            
             newBytesSeq = self.int2bytesSeq(intSeq) #convert the sequence number in int back to bytes to append to the packet
             
             toSend.append(newBytesSeq[0]) # append sequence number in bytes to the packet to be sent
