@@ -98,7 +98,6 @@ class UDPThread(threading.Thread):
             
             if (len(data[4:]) < 512):
                 print('closing file')
-                print(data)
                 self.file.close()
                 self.file = None
         
