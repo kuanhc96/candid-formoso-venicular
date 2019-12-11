@@ -82,7 +82,7 @@ class UDPThread(threading.Thread):
             ack.append(0)
             ack.append(0)
             fileName = self.getFileName(data)
-            self.file = open(fileName, 'w+')
+            self.file = open(fileName, 'wb+')
             print("opening: " + fileName)
         else:
             # ACK -- respond to WRITER. Block # continues
@@ -93,8 +93,7 @@ class UDPThread(threading.Thread):
             if self.previousSeq1 != ack[2] or self.previousSeq2 != ack[3]:
                 self.previousSeq1 = ack[2]
                 self.previousSeq2 = ack[3]
-                for i in data[4:]:
-                    self.file.write(self.int2bytes(i).hex())
+                self.file.write(data[4:])
                 
             
             if (len(data[4:]) < 512):
