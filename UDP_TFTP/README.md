@@ -1,3 +1,5 @@
+This is a tool that transfers files securely over UDP. Files that are saved in the same directory as this tool can be accessed remotely from a client; other files can be sent to the directory in which the tool is located. These tasks can be done as follows:
+
 Place the UDPMain.py, UDPServer.py, and UDPThread.py in the same folder with any text file. Open a terminal and navigate to this folder and run 
 $ python3 UDPMain.py <port #> <timeout (ms)>
 <port #> can be any # that is not a privileged # (0 - 1023). 
