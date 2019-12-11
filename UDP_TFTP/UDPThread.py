@@ -163,15 +163,7 @@ class UDPThread(threading.Thread):
         
         return fileName.decode() #convert byte filename into string
     
-    # Returns byte that represents an integer. This integer may represent a string
-    def int2bytes(self, integer):
-        numBytes = 1
-        temp = integer
-        while (temp / 256 > 1):
-            numBytes = numBytes + 1
-            temp = temp / 256
-        
-        return (integer).to_bytes(numBytes, 'big')
+
     
     def int2bytesSeq(self, integer):
         x = bytearray()
